@@ -21,12 +21,12 @@ class Title extends Component {
 
     if (jobTitle === '*') {
       if (year === '*') {
-        title = 'The average H1B in tech pays'
+        title = 'The average H1B in tech pays '
       } else {
-        title = 'The average tech H1B paid'
+        title = 'The average tech H1B paid '
       }
     } else {
-      title = `Software ${jobTitle}s on an H1B`
+      title = `Software ${jobTitle}s on an H1B `
 
       if (year === '*') {
         title += 'make'
@@ -51,15 +51,15 @@ class Title extends Component {
     if (this.yearsFragment && this.USStateFragment) {
       title = (
         <h2>
-          In {this.USStateFragment}, {this.jobTitleFragment}${mean}
+          In {this.USStateFragment}, {this.jobTitleFragment} ${mean}
           /year {this.yearsFragment}
         </h2>
       )
     } else {
       title = (
         <h2>
-          {this.jobTitleFragment} {`$${mean}/year`}
-          {this.USStateFragment ? `in ${this.stateFragment}` : ''}
+          {`${this.jobTitleFragment} $${mean}/year`}
+          {this.USStateFragment ? ` in ${this.USStateFragment}` : ''}
           {this.yearsFragment}
         </h2>
       )

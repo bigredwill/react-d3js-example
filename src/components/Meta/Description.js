@@ -12,35 +12,41 @@ class Description extends Component {
   allDataForYear(year, data = this.props.allData) {
     return data.filter(d => d.submit_date.getFullYear() === year)
   }
+
   allDataForJobTitle(jobTitle, data = this.props.allData) {
     return data.filter(d => d.clean_job_title === jobTitle)
   }
-  allDataForUSstate(USstate, data = this.props.allData) {
-    return data.filter(d => d.USstate === USstate)
+
+  allDataForUSState(USState, data = this.props.allData) {
+    return data.filter(d => d.USState === USState)
   }
+
   get yearsFragment() {
     const year = this.props.filteredBy.year
     return year === '*' ? '' : `In ${year}`
   }
-  get USstateFragment() {
-    const USstate = this.props.filteredBy.USstate
-    return USstate === '*' ? '' : USStatesMap[USstate.toUpperCase()]
+
+  get USStateFragment() {
+    const USState = this.props.filteredBy.USState
+    return USState === '*' ? '' : USStatesMap[USState.toUpperCase()]
   }
+
   get previousYearFragment() {
     const year = this.props.filteredBy.year
     let fragment
+
     if (year === '*') {
       fragment = ''
     } else if (year === 2012) {
       fragment = ''
     } else {
-      const { USstate, jobTitle } = this.props.filteredBy
+      const { USState, jobTitle } = this.props.filteredBy
       let lastYear = this.allDataForYear(year - 1)
       if (jobTitle !== '*') {
         lastYear = this.allDataForJobTitle(jobTitle, lastYear)
       }
-      if (USstate !== '*') {
-        lastYear = this.allDataForUSstate(USstate, lastYear)
+      if (USState !== '*') {
+        lastYear = this.allDataForUSState(USState, lastYear)
       }
       if (this.props.data.length / lastYear.length > 2) {
         fragment =
@@ -62,6 +68,7 @@ class Description extends Component {
     }
     return fragment
   }
+
   get jobTitleFragment() {
     const jobTitle = this.props.filteredBy.jobTitle
     let fragment
@@ -76,6 +83,7 @@ class Description extends Component {
     }
     return fragment
   }
+
   get countyFragment() {
     const byCounty = _.groupBy(this.props.data, 'countyID'),
       medians = this.props.medianIncomesByCounty
@@ -90,8 +98,8 @@ class Description extends Component {
         medians[items[0].countyID][0].medianIncome
     )
 
-    let best = ordered[ordered.length - 1],
-      countyMedian = medians[best[0].countyID][0].medianIncome
+    let best = ordered[ordered.length - 1]
+    let countyMedian = medians[best[0].countyID][0].medianIncome
 
     const byCity = _.groupBy(best, 'city')
 
@@ -103,8 +111,7 @@ class Description extends Component {
     )
 
     best = ordered[ordered.length - 1]
-
-    const city = S(best[0].city).titleCase().s + `, ${best[0].USstate}`,
+    const city = S(best[0].city).titleCase().s + `, ${best[0].USState}`,
       mean = d3mean(best, d => d.base_salary)
 
     const jobFragment = this.jobTitleFragment
@@ -122,15 +129,18 @@ class Description extends Component {
       </span>
     )
   }
+
   get format() {
     return scaleLinear()
       .domain(d3extent(this.props.data, d => d.base_salary))
       .tickFormat()
   }
+
   render() {
     const format = this.format,
       mean = d3mean(this.props.data, d => d.base_salary),
       deviation = d3deviation(this.props.data, d => d.base_salary)
+
     return (
       <p className="lead">
         {this.yearsFragment ? this.yearsFragment : 'Since 2012'} the{' '}

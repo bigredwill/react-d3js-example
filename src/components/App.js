@@ -9,6 +9,8 @@ import { loadAllData } from './DataHandling'
 
 import CountyMap from './CountyMap'
 import Histogram from './Histogram'
+import MedianLine from './MedianLine'
+import Controls from './Controls'
 import { Description, GraphDescription, Title } from './Meta'
 
 class App extends Component {
@@ -16,6 +18,7 @@ class App extends Component {
     techSalaries: [],
     countyNames: [],
     medianIncomes: [],
+    salariesFilter: () => true,
     filteredBy: {
       USState: '*',
       year: '*',
@@ -43,18 +46,50 @@ class App extends Component {
     }
   }
 
+  updateDataFilter(filter, filteredBy) {
+    this.setState({
+      salariesFilter: filter,
+      filteredBy: filteredBy,
+    })
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { techSalaries, filteredBy } = this.state
+
+    const changedSalaries =
+      (techSalaries && techSalaries.length) !==
+      (nextState.techSalaries && nextState.techSalaries.length)
+
+    const changedFilters = Object.keys(filteredBy).some(
+      k => filteredBy[k] !== nextState.filteredBy[k]
+    )
+
+    return changedSalaries || changedFilters
+  }
+
   render() {
     if (this.state.techSalaries.length < 1) {
       return <Preloader />
     }
 
-    const filteredSalaries = this.state.techSalaries,
+    const filteredSalaries = this.state.techSalaries.filter(
+        this.state.salariesFilter
+      ),
       filteredSalariesMap = _.groupBy(filteredSalaries, 'countyID'),
       countyValues = this.state.countyNames
         .map(county => this.countyValue(county, filteredSalariesMap))
         .filter(d => !_.isNull(d))
 
-    let zoom = null
+    let zoom = null,
+      medianHousehold = this.state.medianIncomesByUSState['US'][0].medianIncome
+
+    if (this.state.filteredBy.USState !== '*') {
+      zoom = this.state.filteredBy.USState
+      medianHousehold = d3.mean(
+        this.state.medianIncomesByUSState[zoom],
+        d => d.medianIncome
+      )
+    }
 
     return (
       <div className="App container">
@@ -80,6 +115,13 @@ class App extends Component {
             height={500}
             zoom={zoom}
           />
+          <rect
+            x="500"
+            y="0"
+            width="600"
+            height="500"
+            style={{ fill: 'white' }}
+          />
           <Histogram
             bins={10}
             width={500}
@@ -91,7 +133,22 @@ class App extends Component {
             bottomMargin={5}
             value={d => d.base_salary}
           />
+          <MedianLine
+            data={filteredSalaries}
+            x={500}
+            y={10}
+            width={600}
+            height={500}
+            bottomMargin={5}
+            median={medianHousehold}
+            value={d => d.base_salary}
+          />
         </svg>
+
+        <Controls
+          data={this.state.techSalaries}
+          updateDataFilter={this.updateDataFilter.bind(this)}
+        />
       </div>
     )
   }

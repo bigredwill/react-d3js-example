@@ -4,7 +4,7 @@ import _ from 'lodash'
 //parse row of household income data
 const cleanIncomes = d => ({
   countyName: d['Name'],
-  USstate: d['State'],
+  USState: d['State'],
   medianIncome: Number(d['Median Household Income']),
   lowerBound: Number(d['90% CI Lower Bound']),
   upperBound: Number(d['90% CI Upper Bound']),
@@ -27,7 +27,7 @@ const cleanSalary = d => {
     clean_job_title: d['job title'],
     base_salary: Number(d['base salary']),
     city: d['city'],
-    USstate: d['state'],
+    USState: d['state'],
     county: d['county'],
     countyID: d['countyID'],
   }
