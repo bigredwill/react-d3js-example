@@ -29,7 +29,7 @@ const cleanSalary = d => {
     city: d['city'],
     USstate: d['state'],
     county: d['county'],
-    countID: d['countID'],
+    countyID: d['countyID'],
   }
 }
 
@@ -60,7 +60,6 @@ export const loadAllData = (callback = _.noop) => {
         medianIncomesMap[d.countyID] = d
       })
     techSalaries = techSalaries.filter(d => !_.isNull(d))
-
     callback({
       usTopoJson: us,
       countyNames: countyNames,
