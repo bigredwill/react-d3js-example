@@ -9,12 +9,18 @@ import { loadAllData } from './DataHandling'
 
 import CountyMap from './CountyMap'
 import Histogram from './Histogram'
+import { Description, GraphDescription, Title } from './Meta'
 
 class App extends Component {
   state = {
     techSalaries: [],
     countyNames: [],
     medianIncomes: [],
+    filteredBy: {
+      USState: '*',
+      year: '*',
+      jobTitle: '*',
+    },
   }
 
   componentWillMount() {
@@ -51,7 +57,18 @@ class App extends Component {
     let zoom = null
 
     return (
-      <div className="App">
+      <div className="App container">
+        <Title data={filteredSalaries} filteredBy={this.state.filteredBy} />
+        <Description
+          data={filteredSalaries}
+          allData={this.state.techSalaries}
+          medianIncomesByCounty={this.state.medianIncomesByCounty}
+          filteredBy={this.state.filteredBy}
+        />
+        <GraphDescription
+          data={filteredSalaries}
+          filteredBy={this.state.filteredBy}
+        />
         <svg width="1100" height="500">
           <CountyMap
             usTopoJson={this.state.usTopoJson}
